@@ -40,7 +40,7 @@ required arguments:
 ## Full Command Example:
 
 ```
-$ python3 cis_pdf_parser.py --pdf_file CIS_Red_Hat_Enterprise_Linux_7_Benchmark_v3.1.1.pdf --out_file rhel_7_controls.csv
+$ python3 cis_pdf_parser.py --pdf_file CIS.pdf --out_file output.json
 ```
 
 ## Output
@@ -55,9 +55,8 @@ Rule, Profile Applicability, Description, Rationale, Audit, Remediation, CIS Con
 
 **Tested against:**
 
-* CIS_Oracle_Linux_7_Benchmark_v3.1.1
-* CIS_Red_Hat_Enterprise_Linux_8_Benchmark_v1.0.1
-* CIS_Red_Hat_Enterprise_Linux_7_Benchmark_v3.1.1
+* CIS Microsoft Azure Foundations Benchmark v2.1.0 - 02-13-2024
+
 
 You will need provide a copy of or download the latest CIS Benchmark files from the [Center for Internet Security](https://learn.cisecurity.org/benchmarks).
 
@@ -71,5 +70,4 @@ This library is licensed under the MIT-0 License. See the LICENSE file.
 
 ## Contributors
 
-* David Bailey, [dbawssec@amazon.com](mailto:dbawssec@amazon.com)
-* ThibautB, [thibon](https://github.com/thibon)
+* Tobias
