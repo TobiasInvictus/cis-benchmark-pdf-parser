@@ -15,10 +15,11 @@ def main():
         description_count,
         acnt,
         rat_count,
+        imp_count,
         rem_count,
         defval_count,
         cis_count,
-    ) = (0,) * 8
+    ) = (0,) * 9
     firstPage = None
     seenList = []
 
@@ -108,7 +109,8 @@ def main():
             try:
                 rerule = re.search(pattern, data, re.DOTALL)
                 if rerule is not None:
-                    rule = rerule.group()
+                    rule = rerule.group().replace('\n', '')
+                    rulenr = rule.split(" ")[0]
                     rule_count += 1
             except IndexError:
                 logger.info("*** Page does not contain a Rule Name ***")
@@ -127,16 +129,24 @@ def main():
             # Get Description by splits as it is always between Description and Rationale, faster than regex
             try:
                 d_post = data.split("Description:", 1)[1]
-                description = d_post.partition("Rationale")[0].strip()
+                description = d_post.partition("Rationale")[0].strip().replace('\n', '')
                 description_count += 1
             except IndexError:
                 logger.info("*** Page does not contain Description ***")
 
-            # Get Rationale by splits as it is always between Rationale and Audit, faster than regex
+            # Get Rationale by splits as it is always between Rationale and Impact, faster than regex
             try:
                 rat_post = data.split("Rationale:", 1)[1]
-                rat = rat_post.partition("Audit:")[0].strip()
+                rat = rat_post.partition("Impact:")[0].strip().replace('\n', '')
                 rat_count += 1
+            except IndexError:
+                logger.info("*** Page does not contain Rationale ***")
+
+            # Get Impact by splits as it is always between Impact and Audit, faster than regex
+            try:
+                imp_post = data.split("Impact:", 1)[1]
+                imp = imp_post.partition("Audit:")[0].strip().replace('\n', '')
+                imp_count += 1
             except IndexError:
                 logger.info("*** Page does not contain Rationale ***")
 
@@ -161,7 +171,7 @@ def main():
                 rem_test = {}
                 rem_post = data.split("Remediation:", 1)[1]
                 rem = rem_post.partition("Default Value:")[0].strip()
-                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', audit)
+                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', rem)
                 for i in range(1, len(rem_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
                     delimiter = rem_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
                     string = rem_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
@@ -176,7 +186,7 @@ def main():
             # Found to be always present in Windows 2019 but NOT in RHEL 7
             try:
                 defval_post = data.split("Default Value:", 1)[1]
-                defval = defval_post.partition("CIS Controls:")[0].strip()
+                defval = defval_post.partition("CIS Controls:")[0].strip().replace('\n', '')
                 defval_count += 1
             except IndexError:
                 logger.info("*** Page does not contain Default Value ***")
@@ -184,7 +194,7 @@ def main():
             # Get CIS Controls by splits as they are always between CIS Controls and P a g e, regex the result
             try:
                 cis_post = data.split("CIS Controls:", 1)[1]
-                cis = cis_post.partition("P a g e")[0].strip()
+                cis = cis_post.partition("P a g e")[0].strip().replace('\n', '')
                 cis = re.sub("[^a-zA-Z0-9\\n.-]+", " ", cis)
                 cis_count += 1
                 # Incrementing defval_count if cis_count is found as Default Value is not always present (ex: RHEL7)
@@ -213,16 +223,16 @@ def main():
                         seenList = [row_count]
                         logger.info("*** Adding the following rule to JSON data: ***")
                         rule_data = {
+                            "Rule_number": rulenr,
                             "Rule": rule,
-                            "Profile Applicability": level,
+                            "Profile_applicability": level,
                             "Description": description,
                             "Rationale": rat,
-                            "Audit": audit,
-                            "Audit Steps": audit_steps,
-                            "Remediation": rem,
-                            "Remediation Steps": rem_steps,
-                            "Default Value": defval,
-                            "CIS Controls": cis
+                            "Impact": imp,
+                            "Audit": audit_steps,
+                            "Remediation": rem_steps,
+                            "Default_value": defval,
+                            "CIS_controls": cis
                         }
                         logger.info(rule_data)
                         rules_data.append(rule_data)
