@@ -156,7 +156,7 @@ def main():
                 a_post = data.split("\nAudit:", 1)[1]
                 audit = a_post.partition("Remediation")[0].strip()
                 #audit_steps = list(filter(None, audit.split("From")))
-                a_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', audit)
+                a_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From PowerShell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', audit)
                 for i in range(1, len(a_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
                     delimiter = a_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
                     string = a_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
@@ -171,7 +171,7 @@ def main():
                 rem_test = {}
                 rem_post = data.split("Remediation:", 1)[1]
                 rem = rem_post.partition("Default Value:")[0].strip()
-                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', rem)
+                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From PowerShell||From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', rem)
                 for i in range(1, len(rem_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
                     delimiter = rem_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
                     string = rem_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace

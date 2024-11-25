@@ -1,8 +1,11 @@
 import csv
 import json
+import re
 
 
 files = ['M365.json', 'Azure.json']
+az_pattern = r"(?<=\n)az[^\n]+(?=\n)"
+int_pattern = r"\d+\."
 
 def main():
     merge()
@@ -30,6 +33,14 @@ def merge():
                 if type(value) is dict:
                     for k, v in value.items():
                         value[k] = v.replace(": \n1", "1")
+                        value[k] = v.replace(": 1", "1")
+                        value[k] = v.replace("\n", "")
+                        value[k] = re.sub(az_pattern, r"\n<code>\g<0></code>", value[k])
+                        value[k] = re.sub(int_pattern, r"\n\g<0>", value[k])
+                elif type(value) is str:
+                    pass
+                        #value = re.sub(r'([.!?])', r'\1\n', value)
+
 
 
         result.extend(jsonData)
