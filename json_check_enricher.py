@@ -32,11 +32,7 @@ def merge():
             for key, value in line.items():
                 if type(value) is dict:
                     for k, v in value.items():
-                        value[k] = v.replace(": \n1", "1")
-                        value[k] = v.replace(": 1", "1")
-                        value[k] = v.replace("\n", "")
-                        value[k] = re.sub(az_pattern, r"\n<code>\g<0></code>", value[k])
-                        value[k] = re.sub(int_pattern, r"\n\g<0>", value[k])
+                        value[k] = (v.replace(": \n1", "1").replace(": 1", "1").replace("\n1. ", "1.").replace(": \n", "").replace("\no \n", "").replace(" > \n", " > ").replace("\u2022 \n", "\n\u2022 \n").replace("\n\n\u2022 \n","\n\u2022"))
                 elif type(value) is str:
                     pass
                         #value = re.sub(r'([.!?])', r'\1\n', value)

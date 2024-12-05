@@ -77,6 +77,8 @@ def main():
                 pattern = "(\d+(?:\.\d+)+)\s\(((L[12])|(NG)|(BL))\)(.*?)(\(Automated\)|\(Manual\))"
             elif "Microsoft Azure Foundations" in CISName:
                 pattern = "(\d+(?:\.\d.\d*)+)(.*?)(\(Automated\)|\(Manual\))"
+            elif "Microsoft 365 Foundations" in CISName:
+                pattern = "(\d+(?:\.\d.\d*)+)(.*?)(\(Automated\)|\(Manual\))"
             else:
                 raise ValueError("Could not find a matching regex for {}".format(CISName))
     except IndexError:
@@ -156,11 +158,14 @@ def main():
                 a_post = data.split("\nAudit:", 1)[1]
                 audit = a_post.partition("Remediation")[0].strip()
                 #audit_steps = list(filter(None, audit.split("From")))
-                a_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From PowerShell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', audit)
-                for i in range(1, len(a_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
-                    delimiter = a_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
-                    string = a_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
-                    a_test.update({delimiter: string}) 
+                a_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell|To audit using PowerShell|To audit using the UI|From [\w\s]+:|To audit using [\w\s]+:|Ensure(?!\s+conforms)[\w\s]+:)', audit)
+                if len(a_split_results) > 1:
+                    for i in range(1, len(a_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
+                        delimiter = a_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
+                        string = a_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
+                        a_test.update({delimiter: string}) 
+                else:
+                    a_test.update({"General Audit Instructions": audit.strip()})
                 audit_steps = a_test
                 acnt += 1
             except IndexError:
@@ -171,11 +176,14 @@ def main():
                 rem_test = {}
                 rem_post = data.split("Remediation:", 1)[1]
                 rem = rem_post.partition("Default Value:")[0].strip()
-                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From PowerShell||From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell)', rem)
-                for i in range(1, len(rem_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
-                    delimiter = rem_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
-                    string = rem_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
-                    rem_test.update({delimiter: string}) 
+                rem_split_results = re.split(r'(From Azure Portal|From REST API|From Powershell|From Azure CLI|From Azure Console|From Azure Policy|From Azure PowerShell|To remediate using the UI|To remediate using PowerShell|Create an [\w\s]+:|Enable [\w\s]+:|To Enable [\w\s]+:|Disable [\w\s]+:|To alter [\w\s]+:|To remove [\w\s]+:)', rem)
+                if len(rem_split_results) > 1:
+                    for i in range(1, len(rem_split_results), 2):  # Start from index 1 and step by 2 to get delimiters
+                        delimiter = rem_split_results[i].strip()  # Get the delimiter and remove leading/trailing whitespace
+                        string = rem_split_results[i + 1].strip()  # Get the corresponding string and remove leading/trailing whitespace
+                        rem_test.update({delimiter: string}) 
+                else:
+                    rem_test.update({"General Remediation Instructions": rem.strip()})
                 rem_steps = rem_test
                 rem_count += 1
             except IndexError:
@@ -232,7 +240,7 @@ def main():
                             "Audit": audit_steps,
                             "Remediation": rem_steps,
                             "Default_value": defval,
-                            "CIS_controls": cis
+                            #"CIS_controls": cis
                         }
                         logger.info(rule_data)
                         rules_data.append(rule_data)
