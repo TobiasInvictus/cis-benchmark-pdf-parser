@@ -37,6 +37,23 @@ required arguments:
                         Set log level (DEBUG, INFO, etc). Default to INFO
 ```
 
+## Examples
+
+The script will parse each page and extractor information for the Azure CIS benchmarks and store them in the Azure.json file.
+```
+python json_cis_pdf_parser.py --pdf_file CIS_Microsoft_Azure_Foundations_Benchmark_v2.1.0.pdf --out_file Azure.json
+```
+
+The script will parse each page and extractor information for the Microsoft 365 CIS benchmarks and store them in the M365.json file.
+```
+python json_cis_pdf_parser.py --pdf_file CIS_Microsoft_365_Foundations_Benchmark_v3.1.0.pdf --out_file M365.json
+```
+
+Add the check numbers from the TODO.csv file to results.json. It needs Azure.json and M365.json to be in the root dir to extract the information from them.
+```
+python json_check_enricher.py
+```
+
 ## Full Command Example:
 
 ```
