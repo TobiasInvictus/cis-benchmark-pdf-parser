@@ -244,6 +244,28 @@ def main():
                         }
                         logger.info(rule_data)
                         rules_data.append(rule_data)
+
+                        # Reset counters and variables
+                        rule_count = 0
+                        level_count = 0
+                        description_count = 0
+                        acnt = 0
+                        rat_count = 0
+                        imp_count = 0
+                        rem_count = 0
+                        defval_count = 0
+                        cis_count = 0
+                        rule = ""
+                        rulenr = ""
+                        level = ""
+                        description = ""
+                        rat = ""
+                        imp = ""
+                        audit_steps = {}
+                        rem_steps = {}
+                        defval = ""
+                        cis = ""
+                        seenList = []
             page += 1
         else:
             logger.info("*** All pages parsed, exiting. ***")
